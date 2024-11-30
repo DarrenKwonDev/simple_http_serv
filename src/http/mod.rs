@@ -4,4 +4,4 @@ pub mod request;
 
 pub use method::Method; // re export. 외부에서 http::Method로 직접 접근 가능해집니다
 pub use request::Request; // re export. 외부에서 http::Request 직접 접근 가능해집니다
-
+pub use request::ParseError;
