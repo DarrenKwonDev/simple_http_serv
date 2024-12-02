@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 // mod = import, include
 mod http;
 mod server; // inject module server.rs (find server/mod.rs || server.rs)
