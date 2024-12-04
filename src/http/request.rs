@@ -1,12 +1,16 @@
 use super::method::{Method, MethodError};
-use std::{convert::TryFrom, 
-    fmt::{Debug, Display, Result as FmtResult}, str::Utf8Error };
 use std::str;
+use std::{
+    convert::TryFrom,
+    fmt::{Debug, Display, Result as FmtResult},
+    str::Utf8Error,
+};
+use super::QueryString;
 
 //  구조체 안에 저장하는 모든 참조에 대해 수명을 명시적으로 지정해야 합니다.
 pub struct Request<'buf> {
     path: &'buf str,
-    query_string: Option<&'buf str>,
+    query_string: Option<QueryString<'buf>>,
     method: Method,
 }
 
@@ -31,14 +35,15 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         // Option 타입에 값을 넣는 패턴
         let mut query_string = None;
         if let Some(i) = path.find('?') {
-            query_string = Some(&path[i + 1..]);
+            query_string = Some(QueryString::from(&path[i + 1..]));
             path = &path[..i];
         }
 
-        Ok(Self{ 
-            path, 
-            query_string, 
-            method })
+        Ok(Self {
+            path,
+            query_string,
+            method,
+        })
     }
 }
 
@@ -47,11 +52,10 @@ fn get_next_word(request: &str) -> Option<(&str, &str)> {
         if c == ' ' || c == '\r' {
             return Some((&request[..i], &request[i + 1..]));
         }
-    };
+    }
 
     None
 }
-
 
 pub enum ParseError {
     InvalidRequest,
@@ -82,7 +86,6 @@ impl From<MethodError> for ParseError {
         Self::InvalidMethod
     }
 }
-
 
 impl Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> FmtResult {
