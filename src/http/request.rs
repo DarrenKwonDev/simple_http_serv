@@ -8,6 +8,8 @@ use std::{
 use super::QueryString;
 
 //  구조체 안에 저장하는 모든 참조에 대해 수명을 명시적으로 지정해야 합니다.
+
+#[derive(Debug)]
 pub struct Request<'buf> {
     path: &'buf str,
     query_string: Option<QueryString<'buf>>,
